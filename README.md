@@ -37,7 +37,7 @@ You can test the game directly in any browser.
 ### Option 1: Python HTTP Server
 Run the following in terminal:
 ```bash
-cd /Users/kranthikumarkulli/.gemini/antigravity/scratch/glam-doll-playable
+cd ~/glam-doll-playable
 python3 -m http.server 8080
 ```
 Then open `http://localhost:8080` in your browser (or use DevTools Device Mode set to iPhone/Android).
