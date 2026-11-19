@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Glam Doll: Day Out! - YouTube Playable</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Top HUD Navigation -->
+    <header id="game-hud">
+      <div class="hud-left">
+        <button id="homeBtn" class="hud-btn" aria-label="Home / Restart">🏠</button>
+        <div class="step-indicator">
+          <span class="step-dot active" data-step="0">🍳</span>
+          <span class="step-dot" data-step="1">💄</span>
+          <span class="step-dot" data-step="2">👗</span>
+          <span class="step-dot" data-step="3">📸</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <button id="soundBtn" class="hud-btn" aria-label="Toggle Sound">🔊</button>
+      </div>
+    </header>
+
+    <!-- Canvas for Particle Sparkles & Confetti -->
+    <canvas id="fxCanvas"></canvas>
+
+    <!-- ==================== STAGE 0: TITLE SCREEN ==================== -->
+    <section id="screen-title" class="screen active">
+      <div class="title-content">
+        <div class="sparkle-logo">✨ 💖 ✨</div>
+        <h1 class="game-logo">GLAM DOLL<br><span class="logo-sub">DAY OUT!</span></h1>
+        <p class="kid-tagline">Cook • Glam • Dress Up • Shine!</p>
+        
+        <div class="doll-preview-mini">
+          <div class="glow-orb"></div>
+          <!-- Cute Animated Doll Face Icon -->
+          <svg viewBox="0 0 100 100" class="mini-doll-svg">
+            <circle cx="50" cy="50" r="38" fill="#ffd1b3" />
+            <!-- Cheeks -->
+            <ellipse cx="32" cy="56" rx="8" ry="4" fill="#ff70a6" opacity="0.5" />
+            <ellipse cx="68" cy="56" rx="8" ry="4" fill="#ff70a6" opacity="0.5" />
+            <!-- Eyes -->
+            <circle cx="36" cy="46" r="5" fill="#2d1e2f" />
+            <circle cx="64" cy="46" r="5" fill="#2d1e2f" />
+            <circle cx="34" cy="44" r="2" fill="#fff" />
+            <circle cx="62" cy="44" r="2" fill="#fff" />
+            <!-- Smile -->
+            <path d="M42 60 Q50 68 58 60" stroke="#d62246" stroke-width="3" fill="none" stroke-linecap="round" />
+            <!-- Hair bangs -->
+            <path d="M12 40 Q50 15 88 40 Q75 10 50 12 Q25 10 12 40 Z" fill="#ffd166" />
+            <circle cx="20" cy="24" r="10" fill="#ffd166" />
+            <circle cx="80" cy="24" r="10" fill="#ffd166" />
+            <path d="M50 18 L55 8 L60 18 L68 18 L62 24 L65 32 L50 26 L35 32 L38 24 L32 18 Z" fill="#ff4d88" />
+          </svg>
+        </div>
+
+        <button id="startPlayBtn" class="big-pink-btn pop-anim">
+          <span>START PLAYING</span>
+          <span class="btn-icon">💖</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== STAGE 1: KITCHEN (COOKING CHEF) ==================== -->
+    <section id="screen-kitchen" class="screen">
+      <div class="stage-banner compact">
+        <h2>🍳 Master Chef Kitchen!</h2>
+        <p class="subtitle">Pick any delicious dish to cook for the doll!</p>
+      </div>
+
+      <!-- Dish Selection Tabs (Horizontal Scrollable) -->
+      <div class="recipe-selector-tabs">
+        <button class="recipe-tab active" data-dish="cake">🎂 Cake</button>
+        <button class="recipe-tab" data-dish="cupcake">🧁 Cupcake</button>
+        <button class="recipe-tab" data-dish="meatballs">🧆 Meatballs</button>
+        <button class="recipe-tab" data-dish="pizzapasta">🍕 Pizza & Pasta</button>
+        <button class="recipe-tab" data-dish="fastfood">🍟 Fries & Nuggets</button>
+      </div>
+
+      <div class="kitchen-scene">
+        <!-- ================= DISH 1: CELEBRATION CAKE ================= -->
+        <div id="station-cake" class="dish-station active">
+          <div class="cake-pedestal-area">
+            <div class="cake-stand">
+              <div id="cake-assembly" class="cake-display empty-cake">
+                <!-- Cake Candles -->
+                <div id="cake-candles-layer" class="cake-candles-row hidden">
+                  <div class="candle"><span class="flame">🔥</span>🕯️</div>
+                  <div class="candle"><span class="flame">🔥</span>🕯️</div>
+                  <div class="candle"><span class="flame">🔥</span>🕯️</div>
+                </div>
+                <!-- Top Tier -->
+                <div id="cake-tier-top" class="cake-tier tier-2 hidden">
+                  <div class="tier-frosting"></div>
+                  <div id="cake-toppings-layer" class="tier-toppings"></div>
+                </div>
+                <!-- Bottom Tier -->
+                <div id="cake-tier-bottom" class="cake-tier tier-1 hidden">
+                  <div class="tier-frosting"></div>
+                </div>
+              </div>
+              <div class="pedestal-plate"></div>
+              <div class="pedestal-leg"></div>
+            </div>
+          </div>
+
+          <div class="kitchen-actions">
+            <div id="cake-instruction" class="bubble-speech">
+              1. Tap sponge to build the cake tiers! 🍰
+            </div>
+
+            <div class="kitchen-tools">
+              <button id="cakeSpongeTool" class="tool-btn active-tool">
+                <span class="tool-emoji">🍰</span>
+                <span class="tool-name">Stack</span>
+              </button>
+              <button id="cakeFrostingTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🧁</span>
+                <span class="tool-name">Frost</span>
+              </button>
+              <button id="cakeCandlesTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🕯️</span>
+                <span class="tool-name">Candles</span>
+              </button>
+            </div>
+
+            <!-- Cake Toppings -->
+            <div id="cake-toppings-shelf" class="items-bar hidden">
+              <button class="cake-top-btn" data-item="strawberry">🍓</button>
+              <button class="cake-top-btn" data-item="star">⭐</button>
+              <button class="cake-top-btn" data-item="cherry">🍒</button>
+              <button class="cake-top-btn" data-item="sprinkles">✨</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= DISH 2: GLAM CUPCAKE ================= -->
+        <div id="station-cupcake" class="dish-station hidden">
+          <div class="oven-area" id="ovenContainer">
+            <div class="oven-window" id="ovenWindow">
+              <div class="oven-baking-rack">
+                <div id="cupcake-baking-target" class="cupcake-item state-empty">
+                  <div class="cupcake-wrapper">🧁</div>
+                  <div id="cupcake-cake" class="cupcake-sponge"></div>
+                  <div id="cupcake-frosting" class="cupcake-frosting-layer hidden"></div>
+                  <div id="cupcake-toppings" class="cupcake-toppings-layer"></div>
+                </div>
+              </div>
+              <div id="oven-glow-heat" class="oven-heat hidden"></div>
+            </div>
+            <div class="oven-door-handle"></div>
+            <div class="oven-controls-bar">
+              <span class="oven-timer-display" id="ovenTimerDisplay">350°F</span>
+            </div>
+          </div>
+
+          <div class="kitchen-actions">
+            <div id="cupcake-instruction" class="bubble-speech">
+              1. Tap batter to fill the cupcake! 🥣
+            </div>
+
+            <div class="kitchen-tools">
+              <button id="cupcakeBatterTool" class="tool-btn active-tool">
+                <span class="tool-emoji">🥣</span>
+                <span class="tool-name">Pour</span>
+              </button>
+              <button id="cupcakeBakeTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🔥</span>
+                <span class="tool-name">Bake</span>
+              </button>
+              <button id="cupcakeFrostingTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🧁</span>
+                <span class="tool-name">Frost</span>
+              </button>
+            </div>
+
+            <div id="cupcake-toppings-shelf" class="items-bar hidden">
+              <button class="cupcake-top-btn" data-item="cherry">🍒</button>
+              <button class="cupcake-top-btn" data-item="star">⭐</button>
+              <button class="cupcake-top-btn" data-item="choc">🍫</button>
+              <button class="cupcake-top-btn" data-item="sparkle">✨</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= DISH 3: SIZZLING MEATBALLS ================= -->
+        <div id="station-meatballs" class="dish-station hidden">
+          <div class="skillet-area">
+            <div class="chef-skillet">
+              <div id="marinara-sauce-layer" class="skillet-sauce hidden"></div>
+              <div id="meatballs-pan-group" class="meatballs-group"></div>
+              <div id="meatball-garnish-layer" class="meatball-garnishes"></div>
+            </div>
+            <div class="stove-controls">
+              <span class="flame-effect">🔥</span>
+            </div>
+          </div>
+
+          <div class="kitchen-actions">
+            <div id="meatball-instruction" class="bubble-speech">
+              1. Tap meatballs to drop them in the hot pan! 🧆
+            </div>
+
+            <div class="kitchen-tools">
+              <button id="meatballDropTool" class="tool-btn active-tool">
+                <span class="tool-emoji">🧆</span>
+                <span class="tool-name">Drop</span>
+              </button>
+              <button id="meatballStirTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🥄</span>
+                <span class="tool-name">Sizzle</span>
+              </button>
+              <button id="meatballSauceTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🥫</span>
+                <span class="tool-name">Sauce</span>
+              </button>
+            </div>
+
+            <div id="meatball-toppings-shelf" class="items-bar hidden">
+              <button class="meatball-top-btn" data-item="basil">🌿 Basil</button>
+              <button class="meatball-top-btn" data-item="cheese">🧀 Cheese</button>
+              <button class="meatball-top-btn" data-item="bread">🥖 Bread</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= DISH 4: PIZZA AND PASTA ================= -->
+        <div id="station-pizzapasta" class="dish-station hidden">
+          <div class="italian-bistro-area">
+            <!-- Heart Pizza Pan -->
+            <div class="pizza-board">
+              <div id="heart-pizza" class="heart-pizza-dough">
+                <div id="pizza-sauce-layer" class="pizza-sauce-layer hidden"></div>
+                <div id="pizza-cheese-layer" class="pizza-cheese-layer hidden"></div>
+                <div id="pizza-toppings-layer" class="pizza-toppings-layer"></div>
+              </div>
+            </div>
+
+            <!-- Twirled Pasta Plate -->
+            <div class="pasta-plate">
+              <div id="twirled-spaghetti" class="spaghetti-swirl hidden">
+                <span class="pasta-sauce-dollop">🍅</span>
+                <div id="pasta-toppings-layer" class="pasta-toppings"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kitchen-actions">
+            <div id="pizza-instruction" class="bubble-speech">
+              1. Tap Sauce & Cheese to prep the pizza! 🧀
+            </div>
+
+            <div class="kitchen-tools">
+              <button id="pizzaSauceTool" class="tool-btn active-tool">
+                <span class="tool-emoji">🧀</span>
+                <span class="tool-name">Cheese</span>
+              </button>
+              <button id="pizzaBakeTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🔥</span>
+                <span class="tool-name">Bake</span>
+              </button>
+              <button id="pastaAddTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🍝</span>
+                <span class="tool-name">Pasta</span>
+              </button>
+            </div>
+
+            <div id="italian-toppings-shelf" class="items-bar hidden">
+              <button class="italian-top-btn" data-item="pepperoni">🍕 Pepperoni</button>
+              <button class="italian-top-btn" data-item="mushroom">🍄 Mushroom</button>
+              <button class="italian-top-btn" data-item="olive">🫒 Olive</button>
+              <button class="italian-top-btn" data-item="basil">🌿 Basil</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= DISH 5: FRENCH FRIES & CHICKEN NUGGETS ================= -->
+        <div id="station-fastfood" class="dish-station hidden">
+          <div class="diner-fryer-area">
+            <!-- Fryer Basket with Hot Oil -->
+            <div class="fryer-tank">
+              <div id="fryer-oil" class="fryer-oil-bath">
+                <div id="fryer-basket-contents" class="fryer-contents hidden">
+                  <span class="fry-piece">🍟</span>
+                  <span class="fry-piece">🍗</span>
+                  <span class="fry-piece">🍟</span>
+                  <span class="fry-piece">🍗</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Glam Diner Serving Basket -->
+            <div class="diner-serving-box">
+              <div class="serving-box-rim">💖 GLAM DINER 💖</div>
+              <div id="diner-food-tray" class="food-tray-contents"></div>
+              <div id="diner-sauce-dollops" class="diner-sauces"></div>
+            </div>
+          </div>
+
+          <div class="kitchen-actions">
+            <div id="fry-instruction" class="bubble-speech">
+              1. Tap Fry to drop fries & nuggets into hot oil! 🍟
+            </div>
+
+            <div class="kitchen-tools">
+              <button id="fryDropTool" class="tool-btn active-tool">
+                <span class="tool-emoji">🍟</span>
+                <span class="tool-name">Fry</span>
+              </button>
+              <button id="fryServeTool" class="tool-btn" disabled>
+                <span class="tool-emoji">📦</span>
+                <span class="tool-name">Serve</span>
+              </button>
+              <button id="frySeasonTool" class="tool-btn" disabled>
+                <span class="tool-emoji">🧂</span>
+                <span class="tool-name">Salt</span>
+              </button>
+            </div>
+
+            <div id="diner-sauce-shelf" class="items-bar hidden">
+              <button class="diner-sauce-btn" data-sauce="ketchup">🍅 Ketchup</button>
+              <button class="diner-sauce-btn" data-sauce="mustard">🍯 Honey Dip</button>
+              <button class="diner-sauce-btn" data-sauce="bbq">🍫 BBQ</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grand Feast Meal Tray Display -->
+        <div class="breakfast-tray">
+          <div class="tray-title">🍽️ Doll's Grand Feast Tray:</div>
+          <div class="tray-slots">
+            <div id="tray-slot-cake" class="tray-slot">
+              <span class="slot-icon">🎂</span>
+              <span class="slot-badge">Ready!</span>
+            </div>
+            <div id="tray-slot-cupcake" class="tray-slot">
+              <span class="slot-icon">🧁</span>
+              <span class="slot-badge">Ready!</span>
+            </div>
+            <div id="tray-slot-meatballs" class="tray-slot">
+              <span class="slot-icon">🧆</span>
+              <span class="slot-badge">Ready!</span>
+            </div>
+            <div id="tray-slot-pizzapasta" class="tray-slot">
+              <span class="slot-icon">🍕</span>
+              <span class="slot-badge">Ready!</span>
+            </div>
+            <div id="tray-slot-fastfood" class="tray-slot">
+              <span class="slot-icon">🍟</span>
+              <span class="slot-badge">Ready!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="stage-footer">
+        <button id="nextToVanityBtn" class="next-stage-btn hidden">
+          <span>SPA TIME &rarr;</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ==================== STAGE 2: VANITY & MAKEUP ==================== -->
+    <section id="screen-vanity" class="screen">
+      <div class="stage-banner">
+        <h2>💄 Glam Spa & Vanity</h2>
+        <p class="subtitle">Clean, blush, eyeshadow & lipstick!</p>
+      </div>
+
+      <div class="vanity-mirror-frame">
+        <!-- Close-up Interactive Face -->
+        <div class="face-mirror" id="mirrorStage">
+          <svg viewBox="0 0 200 240" class="doll-face-svg">
+            <defs>
+              <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffe2d1" />
+                <stop offset="100%" stop-color="#ffd2b8" />
+              </linearGradient>
+            </defs>
+            <!-- Face Base -->
+            <ellipse cx="100" cy="120" rx="70" ry="85" fill="url(#skinGrad)" />
+            <!-- Cute Ears -->
+            <circle cx="28" cy="125" r="14" fill="#ffd2b8" />
+            <circle cx="172" cy="125" r="14" fill="#ffd2b8" />
+            <circle cx="28" cy="125" r="6" fill="#ff70a6" />
+            <circle cx="172" cy="125" r="6" fill="#ff70a6" />
+            
+            <!-- Eyeshadow Layers -->
+            <path id="svg-eyeshadow-left" d="M 55 98 Q 72 82 89 98 Z" fill="transparent" />
+            <path id="svg-eyeshadow-right" d="M 111 98 Q 128 82 145 98 Z" fill="transparent" />
+
+            <!-- Eyebrows -->
+            <path d="M 52 88 Q 70 82 88 90" stroke="#8a5a36" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M 112 90 Q 130 82 148 88" stroke="#8a5a36" stroke-width="4" stroke-linecap="round" fill="none" />
+
+            <!-- Big Cute Eyes -->
+            <g class="doll-eyes">
+              <ellipse cx="70" cy="104" rx="14" ry="16" fill="#1e1828" />
+              <ellipse cx="130" cy="104" rx="14" ry="16" fill="#1e1828" />
+              <!-- Eye Sparkles -->
+              <circle cx="66" cy="98" r="6" fill="#fff" />
+              <circle cx="74" cy="110" r="3" fill="#fff" />
+              <circle cx="126" cy="98" r="6" fill="#fff" />
+              <circle cx="134" cy="110" r="3" fill="#fff" />
+              <!-- Eyelashes -->
+              <path d="M 56 94 L 50 86 M 84 94 L 90 86" stroke="#1e1828" stroke-width="3" stroke-linecap="round" />
+              <path d="M 116 94 L 110 86 M 144 94 L 150 86" stroke="#1e1828" stroke-width="3" stroke-linecap="round" />
+            </g>
+
+            <!-- Cheeks / Blush -->
+            <ellipse id="svg-blush-left" cx="54" cy="136" rx="18" ry="10" fill="transparent" opacity="0.6" />
+            <ellipse id="svg-blush-right" cx="146" cy="136" rx="18" ry="10" fill="transparent" opacity="0.6" />
+
+            <!-- Cute Nose -->
+            <path d="M 98 126 Q 100 130 102 126" stroke="#e09772" stroke-width="3" stroke-linecap="round" fill="none" />
+
+            <!-- Lips -->
+            <path id="svg-lips" d="M 85 160 Q 100 172 115 160 Q 100 162 85 160 Z" fill="#ff7aa2" />
+            
+            <!-- Default hair fringe / frame -->
+            <path d="M 28 85 Q 100 20 172 85 Q 140 38 100 40 Q 60 38 28 85 Z" fill="#fbd160" />
+            <!-- Face Sparkle Sticker -->
+            <text id="face-glitter-star" x="145" y="118" font-size="16" class="hidden">⭐</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Vanity Makeup Tools Drawer -->
+      <div class="vanity-controls">
+        <div class="makeup-category-tabs">
+          <button class="cat-tab active" data-makeup="sponge">🧽 Clean</button>
+          <button class="cat-tab" data-makeup="eyeshadow">✨ Eyes</button>
+          <button class="cat-tab" data-makeup="blush">🌸 Blush</button>
+          <button class="cat-tab" data-makeup="lipstick">💄 Lips</button>
+        </div>
+
+        <div id="palette-options" class="palette-swatches">
+          <!-- Dynamically populated by JS according to selected tab -->
+        </div>
+      </div>
+
+      <footer class="stage-footer">
+        <button id="nextToDressupBtn" class="next-stage-btn">
+          <span>DRESS UP &rarr;</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ==================== STAGE 3: DRESS UP STUDIO ==================== -->
+    <section id="screen-dressup" class="screen">
+      <div class="stage-banner compact">
+        <h2>👗 Fashion Dress-Up</h2>
+        <p class="subtitle">Pick hairstyles, chic outfits & accessories!</p>
+      </div>
+
+      <div class="dressup-workbench">
+        <!-- Doll Avatar Stage -->
+        <div class="doll-stage-container">
+          <div id="mainDollAvatar" class="avatar-doll">
+            <!-- Dynamic SVG Doll Structure -->
+            <svg viewBox="0 0 240 380" class="full-doll-svg">
+              <!-- Back Hair -->
+              <g id="slot-back-hair"></g>
+              
+              <!-- Doll Body / Silhouette -->
+              <g id="doll-body-base">
+                <!-- Legs -->
+                <path d="M 96 230 L 96 335 Q 96 350 105 350 Q 114 350 114 335 L 114 230 Z" fill="#ffd1b3" />
+                <path d="M 126 230 L 126 335 Q 126 350 135 350 Q 144 350 144 335 L 144 230 Z" fill="#ffd1b3" />
+                <!-- Torso & Arms -->
+                <ellipse cx="120" cy="180" rx="34" ry="50" fill="#ffd1b3" />
+                <!-- Neck & Head -->
+                <rect x="110" y="125" width="20" height="24" fill="#ffd1b3" rx="4" />
+                <ellipse cx="120" cy="95" rx="38" ry="42" fill="#ffd1b3" />
+                
+                <!-- Face Details -->
+                <circle cx="108" cy="92" r="4" fill="#2d1e2f" />
+                <circle cx="132" cy="92" r="4" fill="#2d1e2f" />
+                <circle cx="106" cy="90" r="1.5" fill="#fff" />
+                <circle cx="130" cy="90" r="1.5" fill="#fff" />
+                <ellipse id="mini-blush-l" cx="100" cy="102" rx="7" ry="4" fill="#ff7aa2" opacity="0.6" />
+                <ellipse id="mini-blush-r" cx="140" cy="102" rx="7" ry="4" fill="#ff7aa2" opacity="0.6" />
+                <path id="mini-lip-path" d="M 114 114 Q 120 120 126 114 Z" fill="#ff4d88" />
+              </g>
+
+              <!-- Clothing Slot -->
+              <g id="slot-outfit"></g>
+
+              <!-- Shoes Slot -->
+              <g id="slot-shoes"></g>
+
+              <!-- Front Hair Slot -->
+              <g id="slot-front-hair"></g>
+
+              <!-- Accessories Slot (Bows, Glasses, Tiara) -->
+              <g id="slot-accessories"></g>
+
+              <!-- Handbag Slot -->
+              <g id="slot-handbag"></g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Wardrobe Wardrobe Selector Tabs -->
+        <div class="wardrobe-panel">
+          <div class="wardrobe-tabs">
+            <button class="w-tab active" data-wardrobe="hair">💇 Hair</button>
+            <button class="w-tab" data-wardrobe="outfits">👗 Outfits</button>
+            <button class="w-tab" data-wardrobe="shoes">👠 Shoes</button>
+            <button class="w-tab" data-wardrobe="accessories">👑 Accs</button>
+          </div>
+
+          <div id="wardrobe-items-grid" class="items-grid">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+      </div>
+
+      <footer class="stage-footer">
+        <button id="nextToPhotoBtn" class="next-stage-btn">
+          <span>PHOTO BOOTH 📸 &rarr;</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ==================== STAGE 4: PHOTO BOOTH & CELEBRATION ==================== -->
+    <section id="screen-photobooth" class="screen">
+      <div class="stage-banner compact">
+        <h2>📸 Glamour Photo Shoot!</h2>
+        <p class="subtitle">Pick a background, strike a pose, and snap!</p>
+      </div>
+
+      <div class="photobooth-container">
+        <!-- Photo Frame Card (What gets snapped) -->
+        <div id="polaroidCard" class="polaroid-frame bg-glam">
+          <div id="photoDollClone" class="doll-snapshot-view">
+            <!-- Cloned SVG Doll rendered here -->
+          </div>
+          <div class="photo-stickers-layer" id="stickersLayer"></div>
+          <div class="polaroid-caption">
+            <span class="caption-text">⭐ Glam Doll • Best Day Out! ⭐</span>
+          </div>
+        </div>
+
+        <!-- Customizer Bar for Photo -->
+        <div class="photo-controls-row">
+          <div class="bg-picker">
+            <span class="picker-lbl">Theme:</span>
+            <button class="bg-btn active" data-bg="bg-glam">💖 Disco</button>
+            <button class="bg-btn" data-bg="bg-palace">🏰 Castle</button>
+            <button class="bg-btn" data-bg="bg-garden">🌸 Garden</button>
+            <button class="bg-btn" data-bg="bg-stars">✨ Galaxy</button>
+          </div>
+
+          <div class="sticker-picker">
+            <button class="add-sticker-btn" data-emoji="💖">💖</button>
+            <button class="add-sticker-btn" data-emoji="⭐">⭐</button>
+            <button class="add-sticker-btn" data-emoji="👑">👑</button>
+            <button class="add-sticker-btn" data-emoji="🦋">🦋</button>
+            <button class="add-sticker-btn" data-emoji="🎀">🎀</button>
+          </div>
+        </div>
+
+        <button id="snapPhotoBtn" class="big-pink-btn snap-btn pop-anim">
+          <span>📸 SNAP PHOTO!</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Celebration / Final Result Modal -->
+    <div id="resultModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>🎉 STUNNING! 🎉</h2>
+          <p>Doll is ready for her fabulous day out!</p>
+        </div>
+        
+        <div id="finalSnapshotPreview" class="final-photo-preview">
+          <!-- Snapshot scaled -->
+        </div>
+
+        <div class="modal-actions">
+          <button id="playAgainBtn" class="big-pink-btn">
+            <span>PLAY AGAIN 🔄</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
